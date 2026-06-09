@@ -1,0 +1,3 @@
+# O runtime usa apenas a biblioteca padrão do Python.
+# Opcional para quem preferir pytest em vez de unittest:
+pytest>=8.0

@@ -1,0 +1,4 @@
+# TABELA=URL_DA_DOCUMENTACAO_DE_REFERENCIA
+# Exemplos sintéticos. Substitua por URLs de catálogo interno, documentação de API ou páginas de referência do seu domínio.
+DEMO_CUSTOMERS=https://example.com/reference/demo-customers
+DEMO_ORDERS=https://example.com/reference/demo-orders

@@ -1,0 +1,2 @@
+source_table,source_column,target_table,target_column
+DEMO_CUSTOMERS,STATUS,DEMO_CUSTOMER_STATUS,STATUS_CODE
