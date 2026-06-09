@@ -1,0 +1,3 @@
+table_name,column_name,column_description,column_characteristic,doc_url
+ZX_LINES,TAX_RATE_CODE,Tax rate code,VARCHAR2,https://docs.oracle.com/en/cloud/saas/financials/25c/oedmf/zxlines-13072.html
+ZX_LINES,TAX_AMT_FUNCL_CURR,Tax amount in functional currency,NUMBER,https://docs.oracle.com/en/cloud/saas/financials/25c/oedmf/zxlines-13072.html

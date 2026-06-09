@@ -1939,6 +1939,27 @@ def load_reference_doc_mapping() -> dict[str, str]:
             out[table_key] = doc_url
     return out
 
+
+@lru_cache(maxsize=1)
+def load_reference_column_metadata() -> dict[tuple[str, str], dict[str, str]]:
+    metadata_path = Path(__file__).resolve().parent.parent / "assets" / "reference_column_metadata.csv"
+    if not metadata_path.exists():
+        return {}
+    out: dict[tuple[str, str], dict[str, str]] = {}
+    with metadata_path.open("r", encoding="utf-8-sig", newline="") as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            table_name = (row.get("table_name") or "").strip().upper()
+            column_name = (row.get("column_name") or "").strip().upper()
+            if not table_name or not column_name:
+                continue
+            out[(table_name, column_name)] = {
+                "column_description": (row.get("column_description") or "").strip(),
+                "column_characteristic": (row.get("column_characteristic") or "").strip(),
+                "doc_url": (row.get("doc_url") or "").strip(),
+            }
+    return out
+
 def missing_rows_grouped_by_dataset(a: ExtractorAudit) -> dict[str, list[dict[str, str]]]:
     grouped: dict[str, list[dict[str, str]]] = {}
     for fld in a.missing_fields_in_doc:
@@ -1948,6 +1969,13 @@ def missing_rows_grouped_by_dataset(a: ExtractorAudit) -> dict[str, list[dict[st
         dtype = meta.get("oracle_characteristic") or meta.get("data_type", "N/A")
         desc = meta.get("oracle_description", "A preencher pela documentacao funcional 6")
         doc_url = meta.get("oracle_doc_url", "")
+        ref_meta = load_reference_column_metadata().get((src_table.upper(), str(src_col).upper()), {})
+        if ref_meta.get("column_description"):
+            desc = ref_meta["column_description"]
+        if ref_meta.get("column_characteristic"):
+            dtype = ref_meta["column_characteristic"]
+        if ref_meta.get("doc_url"):
+            doc_url = ref_meta["doc_url"]
         if not doc_url:
             doc_url = load_reference_doc_mapping().get(src_table.upper(), "")
         grouped.setdefault(ds_name, []).append(
