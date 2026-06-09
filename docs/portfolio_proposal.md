@@ -1,28 +1,28 @@
-# Proposta de Portfólio: Equidade Entre Documentação e Referências
+# Proposta de Portfolio: Equidade Entre Documentacao e Referencias
 
 ## Posicionamento
 
-Reference Equity DocSync é uma ferramenta de governança para times que mantêm documentação técnica junto de referências de implementação. O projeto trata documentação e artefatos de referência como duas fontes que precisam permanecer equivalentes, rastreáveis e revisáveis.
+Reference Equity DocSync e uma ferramenta de governanca para times que mantem documentacao tecnica junto de referencias de implementacao. O projeto trata documentacao e artefatos de referencia como duas fontes que precisam permanecer equivalentes, rastreaveis e revisaveis.
 
 ## Problema
 
-Quando um modelo de dados, contrato de API, definição de relatório ou referência de integração muda, a documentação frequentemente fica para trás. A revisão manual é lenta e tende a focar nas mudanças mais óbvias, deixando divergências menores, campo a campo, invisíveis até que usuários encontrem inconsistências.
+Quando um modelo de dados, contrato de API, definicao de relatorio ou referencia de integracao muda, a documentacao frequentemente fica para tras. A revisao manual e lenta e tende a focar nas mudancas mais obvias, deixando divergencias menores, campo a campo, invisiveis ate que usuarios encontrem inconsistencias.
 
-## Solução
+## Solucao
 
-A ferramenta lê pacotes de referência, delimita as seções correspondentes na documentação e gera um conjunto de evidências:
+A ferramenta le pacotes de referencia, delimita as secoes correspondentes na documentacao e gera um conjunto de evidencias:
 
 - campos ausentes por dataset
-- tabela e coluna de origem quando a linhagem está disponível
-- auditoria de seleção do modelo quando há múltiplos arquivos candidatos
-- JSON para automação
-- Markdown para notas de revisão
-- dashboard HTML para públicos técnicos e funcionais
+- tabela e coluna de origem quando a linhagem esta disponivel
+- auditoria de selecao do modelo quando ha multiplos arquivos candidatos
+- JSON para automacao
+- Markdown para notas de revisao
+- dashboard HTML para publicos tecnicos e funcionais
 
 ## Por que isso importa
 
-A proposta não é apenas comparar arquivos. É criar equidade documental: implementação e documentação escrita devem ter autoridade balanceada, e as lacunas precisam ficar visíveis antes da publicação.
+A proposta nao e apenas comparar arquivos. E criar equidade documental: implementacao e documentacao escrita devem ter autoridade balanceada, e as lacunas precisam ficar visiveis antes da publicacao.
 
-## Narrativa da demonstração
+## Narrativa da demonstracao
 
-A demo sintética inclui um modelo de referência de clientes em que `ACCOUNT_STATUS` existe no modelo de origem, mas está ausente na documentação publicada. O dashboard destaca essa lacuna e mostra a referência de origem que deve ser revisada.
+A demo publica usa a tabela oficial `ZX_LINES` como exemplo de referencia real. Campos como `TAX_RATE_CODE` e `TAX_AMT_FUNCL_CURR` existem no modelo de origem, mas foram omitidos da documentacao de exemplo para que o dashboard mostre lacunas reais de enriquecimento, incluindo link para a documentacao oficial.

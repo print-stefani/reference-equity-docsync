@@ -1203,7 +1203,7 @@ class OracleDocsEnricher:
 
     def _default(self) -> OracleEnriched:
         return OracleEnriched(
-            description="A preencher pela documentação funcional 1",
+            description="A preencher pela documentacao funcional 1",
             characteristic="N/A",
             doc_url="",
             matched=False,
@@ -1472,7 +1472,7 @@ class OracleDocsEnricher:
                 desc, charac = self._extract_doc_metadata(page, column_name)
                 if desc or (charac and charac != "N/A"):
                     return OracleEnriched(
-                        description=desc or "A preencher pela documentação funcional 2",
+                        description=desc or "A preencher pela documentacao funcional 2",
                         characteristic=charac or "N/A",
                         doc_url=doc_url,
                         matched=bool(desc),
@@ -1532,7 +1532,7 @@ class OracleDocsEnricher:
 
             desc, charac = self._extract_doc_metadata(detail_page, column_name)
             return OracleEnriched(
-                description=desc or "A preencher pela documentação funcional 3",
+                description=desc or "A preencher pela documentacao funcional 3",
                 characteristic=charac or "N/A",
                 doc_url=doc_url,
                 matched=bool(desc),
@@ -1723,7 +1723,7 @@ def parse_datamodel(xdmz_bytes: bytes, enricher: OracleDocsEnricher) -> list[Dat
                             meta["source_sql_snippet"] = f"{base_col} ... {xml_tag}"
 
             meta.setdefault("oracle_doc_url", "")
-            meta.setdefault("oracle_description", "A preencher pela documentação funcional 4")
+            meta.setdefault("oracle_description", "A preencher pela documentacao funcional 4")
             meta.setdefault("oracle_characteristic", meta.get("data_type", "N/A"))
             meta.setdefault("oracle_provider", "none")
             meta.setdefault("oracle_matched", "false")
@@ -1880,7 +1880,7 @@ def audit_one(
         if enriched.matched and enriched.description:
             meta["oracle_description"] = enriched.description
         else:
-            meta["oracle_description"] = "A preencher pela documentação funcional 5"
+            meta["oracle_description"] = "A preencher pela documentacao funcional 5"
         if enriched.characteristic and enriched.characteristic != "N/A":
             meta["oracle_characteristic"] = enriched.characteristic
         else:
@@ -1922,6 +1922,23 @@ def split_doc_scope(audits: list[ExtractorAudit]) -> tuple[list[ExtractorAudit],
     return in_doc, not_doc
 
 
+@lru_cache(maxsize=1)
+def load_reference_doc_mapping() -> dict[str, str]:
+    mapping_path = Path(__file__).resolve().parent.parent / "assets" / "table_doc_mapping.txt"
+    if not mapping_path.exists():
+        return {}
+    out: dict[str, str] = {}
+    for raw in mapping_path.read_text(encoding="utf-8", errors="ignore").splitlines():
+        line = raw.strip()
+        if not line or line.startswith("#") or "=" not in line:
+            continue
+        table, url = line.split("=", 1)
+        table_key = table.strip().upper()
+        doc_url = url.strip()
+        if table_key and doc_url:
+            out[table_key] = doc_url
+    return out
+
 def missing_rows_grouped_by_dataset(a: ExtractorAudit) -> dict[str, list[dict[str, str]]]:
     grouped: dict[str, list[dict[str, str]]] = {}
     for fld in a.missing_fields_in_doc:
@@ -1929,8 +1946,10 @@ def missing_rows_grouped_by_dataset(a: ExtractorAudit) -> dict[str, list[dict[st
         src_table = str(meta.get("source_table", "N/A") or "N/A")
         src_col = meta.get("source_column", fld)
         dtype = meta.get("oracle_characteristic") or meta.get("data_type", "N/A")
-        desc = meta.get("oracle_description", "A preencher pela documentação funcional 6")
+        desc = meta.get("oracle_description", "A preencher pela documentacao funcional 6")
         doc_url = meta.get("oracle_doc_url", "")
+        if not doc_url:
+            doc_url = load_reference_doc_mapping().get(src_table.upper(), "")
         grouped.setdefault(ds_name, []).append(
             {
                 "dataset": ds_name,
@@ -2066,7 +2085,7 @@ def html_missing_rows_main(rows: list[dict[str, str]]) -> str:
             f"<td>{html.escape(r.get('column_characteristic', 'N/A'))}</td>"
             "</tr>"
         )
-    return "".join(chunks) if chunks else "<tr><td colspan='5'>None</td></tr>"
+    return "".join(chunks) if chunks else "<tr><td colspan='5'>Nenhum</td></tr>"
 
 
 def build_dashboard(audits: list[ExtractorAudit], out_html: Path, include_pass_cards: bool = False) -> None:
@@ -2107,19 +2126,19 @@ def build_dashboard(audits: list[ExtractorAudit], out_html: Path, include_pass_c
             missing_main_sections.append(
                 f"<tr><td colspan='5'><strong>{html.escape(ds_name)}</strong></td></tr>{html_missing_rows_main(rows)}"
             )
-        main_rows_html = "".join(missing_main_sections) if missing_main_sections else "<tr><td colspan='5'>None</td></tr>"
+        main_rows_html = "".join(missing_main_sections) if missing_main_sections else "<tr><td colspan='5'>Nenhum</td></tr>"
 
         rejected = "".join(
             f"<tr><td>{html.escape(r['file_name'])}</td><td>{html.escape(','.join(r['reasons']) if r['reasons'] else 'lower_score')}</td></tr>"
             for r in a.rejected_candidates
-        ) or "<tr><td colspan='2'>None</td></tr>"
+        ) or "<tr><td colspan='2'>Nenhum</td></tr>"
 
         actionable_cards.append(
             f"<details class='card actionable-card' data-extractor='{html.escape(a.extractor)}' data-status='{a.status}' data-missing='{len(a.missing_fields_in_doc)}'>"
             f"<summary><span class='title'>{html.escape(a.extractor)}</span> <span class='status {a.status}'>{a.status}</span> "
             f"<span class='meta'>missing: {len(a.missing_fields_in_doc)}</span></summary>"
             "<div class='grid'>"
-            "<div class='box missing-box'><h3>Campos ausentes by dataset (document scope)</h3>"
+            "<div class='box missing-box'><h3>Campos ausentes por dataset (escopo da documentacao)</h3>"
             "<table class='inner'><thead><tr><th>XML Tag Name</th><th>Descrição da coluna</th><th>Tabela associada a cada coluna</th><th>Nome da coluna</th><th>Característica da coluna</th></tr></thead><tbody>"
             f"{main_rows_html}</tbody></table></div>"
             "<div class='box'><h3>Auditoria de seleção (rejeitados)</h3><p>Arquivos rejeitados durante a seleção da referência (TEST/BKP/ORIGINAL etc.).</p>"
@@ -2178,12 +2197,12 @@ body{{margin:0;background:#eef2f7;font-family:Segoe UI,Tahoma,sans-serif;color:#
 <div class='kpi'><div class='n'>{len(not_doc)}</div><div class='l'>Fora do escopo da documentação</div></div>
 <div class='kpi kpi-red'><div class='n'>{fail}</div><div class='l'>FAIL</div></div>
 <div class='kpi kpi-orange'><div class='n'>{warn}</div><div class='l'>PASS_WITH_WARNINGS</div></div>
-<div class='kpi kpi-green'><div class='n'>{len(pass_only)}</div><div class='l'>PASS (sem ação)</div></div>
+<div class='kpi kpi-green'><div class='n'>{len(pass_only)}</div><div class='l'>PASS (sem acao)</div></div>
 <div class='kpi kpi-red'><div class='n'>{miss_total}</div><div class='l'>Campos ausentes</div></div>
 </div>
 <div class='panel'>
 <div class='box'><strong>Principais prioridades de revisão</strong><ul>{highlights}</ul></div>
-<div class='box'><strong>Extractors out of documentation scope</strong><ul>{notdoc_items}</ul></div>
+<div class='box'><strong>Extractors fora do escopo da documentacao</strong><ul>{notdoc_items}</ul></div>
 </div>
 <div class='filters'>
 <input id='searchInput' class='search-input' type='text' placeholder='Buscar extractor, tabela, campo ou status...'/>

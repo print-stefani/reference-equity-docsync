@@ -1,4 +1,3 @@
-# TABELA=URL_DA_DOCUMENTACAO_DE_REFERENCIA
-# Exemplos sintéticos. Substitua por URLs de catálogo interno, documentação de API ou páginas de referência do seu domínio.
-DEMO_CUSTOMERS=https://example.com/reference/demo-customers
-DEMO_ORDERS=https://example.com/reference/demo-orders
+# TABELA=URL_DA_DOCUMENTACAO_OFICIAL
+# Exemplo publico usado na demo de enriquecimento do dashboard.
+ZX_LINES=https://docs.oracle.com/en/cloud/saas/financials/25c/oedmf/zxlines-13072.html
